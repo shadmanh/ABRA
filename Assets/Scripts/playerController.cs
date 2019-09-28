@@ -21,14 +21,10 @@ public class playerController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        if (Input.GetAxis("Horizontal") < 0)
-        {
-            moveLeft = true;
-        }
-        else
-        {
-            moveLeft = false;
-        }
+        moveLeft = Input.GetAxis("Horizontal") < 0;
+        moveRight = Input.GetAxis("Horizontal") > 0;
+        moveUp = Input.GetAxis("Vertical") > 0;
+        moveDown = Input.GetAxis("Vertical") < 0;
     }
 
     private void FixedUpdate()
@@ -36,6 +32,18 @@ public class playerController : MonoBehaviour
         if (moveLeft)
         {
             rb.AddForce(new Vector2(-5, 0), ForceMode2D.Impulse);
+        }
+        if (moveRight)
+        {
+            rb.AddForce(new Vector2(5, 0), ForceMode2D.Impulse);
+        }
+        if (moveUp)
+        {
+            rb.AddForce(new Vector2(0, 5), ForceMode2D.Impulse);
+        }
+        if (moveDown)
+        {
+            rb.AddForce(new Vector2(0, -5), ForceMode2D.Impulse);
         }
     }
 }
