@@ -11,6 +11,8 @@ public class playerController : MonoBehaviour
     private Transform transform;
     [SerializeField]
     private float speed = 1.0f;
+    [SerializeField]
+    private int turnLimit;
 
     private machineController machine;
 
@@ -22,6 +24,8 @@ public class playerController : MonoBehaviour
     private Vector2 pos;
     private int posx;
     private int posy;
+
+    private int turnsPerformed = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -42,6 +46,14 @@ public class playerController : MonoBehaviour
         moveRight = Input.GetKey(KeyCode.RightArrow);
         moveUp = Input.GetKey(KeyCode.UpArrow);
         moveDown = Input.GetKey(KeyCode.DownArrow);
+
+        Debug.Log(turnsPerformed);
+
+        if (turnsPerformed == turnLimit && transform.position.x == posx*World.blockSize && transform.position.y == posy*(-World.blockSize))
+        {
+            machine.doAction();
+            resetTurnCounter();
+        }
     }
 
     //0 is a free space
@@ -51,7 +63,7 @@ public class playerController : MonoBehaviour
     //4 is the player
     private void FixedUpdate()
     {
-        if (transform.position.x == posx*World.blockSize && transform.position.y == posy*(-World.blockSize))
+        if (transform.position.x == posx*World.blockSize && transform.position.y == posy*(-World.blockSize) && turnsPerformed != turnLimit)
         {
             int newPosX = moveLeft ? posx - 1 : posx;
             newPosX = moveRight ? posx + 1 : newPosX;
@@ -62,13 +74,14 @@ public class playerController : MonoBehaviour
                 newPosY = posy;
             }
             //If the player is trying to move to an open space/finish space
-            if (World.grid[newPosY][newPosX] <= 1)
+            if (World.grid[newPosY][newPosX] <= 1 && (newPosX != posx || newPosY != posy))
             {
                 World.grid[newPosY][newPosX] = 1;
                 World.grid[posy][posx] = 0;
                 pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
                 posx = newPosX;
                 posy = newPosY;
+                turnsPerformed++;
             }
             //If the player is trying to push the machine
             else if (World.grid[newPosY][newPosX] == 2)
@@ -81,7 +94,8 @@ public class playerController : MonoBehaviour
                     pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
                     posx = newPosX;
                     posy = newPosY;
-            PrintGrid();
+                    turnsPerformed++;
+                    PrintGrid();
                 }
                 
                 //Pushing it right
@@ -92,7 +106,8 @@ public class playerController : MonoBehaviour
                     pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
                     posx = newPosX;
                     posy = newPosY;
-            PrintGrid();
+                    turnsPerformed++;
+                    PrintGrid();
                 }
                 
                 //Pushing it down
@@ -103,7 +118,8 @@ public class playerController : MonoBehaviour
                     pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
                     posx = newPosX;
                     posy = newPosY;
-            PrintGrid();
+                    turnsPerformed++;
+                    PrintGrid();
                 }
                 
                 //Pushing it up
@@ -114,8 +130,9 @@ public class playerController : MonoBehaviour
                     pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
                     posx = newPosX;
                     posy = newPosY;
+                    turnsPerformed++;
+                    PrintGrid();
                 }
-            PrintGrid();
             }
         }
 
@@ -134,5 +151,62 @@ public class playerController : MonoBehaviour
             line += "\n";
         }
         Debug.Log(line);
+    }
+
+    public bool MoveLeft()
+    {
+        if (World.grid[posy][posx - 1] <= 1)
+        {
+            World.grid[posy][posx - 1] = 4;
+            World.grid[posy][posx] = 0;
+            posx = posx - 1;
+            pos += new Vector2(-World.blockSize, 0);
+            return true;
+        }
+        return false;
+    }
+
+    public bool MoveRight()
+    {
+        if (World.grid[posy][posx + 1] <= 1)
+        {
+            World.grid[posy][posx + 1] = 4;
+            World.grid[posy][posx] = 0;
+            posx = posx + 1;
+            pos += new Vector2(World.blockSize, 0);
+            return true;
+        }
+        return false;
+    }
+
+    public bool MoveDown()
+    {
+        if (World.grid[posy + 1][posx] <= 1)
+        {
+            World.grid[posy + 1][posx] = 4;
+            World.grid[posy][posx] = 0;
+            posy = posy + 1;
+            pos += new Vector2(0, -World.blockSize);
+            return true;
+        }
+        return false;
+    }
+
+    public bool MoveUp()
+    {
+        if (World.grid[posy - 1][posx] <= 1)
+        {
+            World.grid[posy - 1][posx] = 4;
+            World.grid[posy][posx] = 0;
+            posy = posy - 1;
+            pos += new Vector2(0, World.blockSize);
+            return true;
+        }
+        return false;
+    }
+
+    public void resetTurnCounter()
+    {
+        turnsPerformed = 0;
     }
 }
