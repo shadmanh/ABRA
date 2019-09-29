@@ -33,10 +33,11 @@ public class playerController : MonoBehaviour
         pos = transform.position;
         posx = (int)transform.position.x/World.blockSize;
         posy = -1*(int)transform.position.y/World.blockSize;
-        World.grid[posy][posx] = 4;
+        World.grid[posy][posx] = World.PLAYER;
 
         GameObject go = GameObject.Find("mech");
         machine = go.GetComponent<machineController>();
+        machine.doAction();
     }
 
     // Update is called once per frame
@@ -47,7 +48,7 @@ public class playerController : MonoBehaviour
         moveUp = Input.GetKey(KeyCode.UpArrow);
         moveDown = Input.GetKey(KeyCode.DownArrow);
 
-        Debug.Log(turnsPerformed);
+        //Debug.Log(turnsPerformed);
 
         if (turnsPerformed == turnLimit && transform.position.x == posx*World.blockSize && transform.position.y == posy*(-World.blockSize))
         {
@@ -74,23 +75,23 @@ public class playerController : MonoBehaviour
                 newPosY = posy;
             }
             //If the player is trying to move to an open space/finish space
-            if (World.grid[newPosY][newPosX] <= 1 && (newPosX != posx || newPosY != posy))
+            if (World.grid[newPosY][newPosX] <= World.FREE_OR_FINISH && (newPosX != posx || newPosY != posy))
             {
-                World.grid[newPosY][newPosX] = 1;
-                World.grid[posy][posx] = 0;
+                World.grid[newPosY][newPosX] = World.PLAYER;
+                World.grid[posy][posx] = World.FREE;
                 pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
                 posx = newPosX;
                 posy = newPosY;
                 turnsPerformed++;
             }
             //If the player is trying to push the machine
-            else if (World.grid[newPosY][newPosX] == 2)
+            else if (World.grid[newPosY][newPosX] == World.MACHINE)
             {
                 //Pushing it left
                 if (newPosX == posx - 1 && machine.MoveLeft() )
                 {
-                    World.grid[posy][posx - 1] = 4; 
-                    World.grid[posy][posx] = 0;
+                    World.grid[posy][posx - 1] = World.PLAYER; 
+                    World.grid[posy][posx] = World.FREE;
                     pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
                     posx = newPosX;
                     posy = newPosY;
@@ -101,8 +102,8 @@ public class playerController : MonoBehaviour
                 //Pushing it right
                 else if (newPosX == posx + 1 && machine.MoveRight() )
                 {
-                    World.grid[posy][posx + 1] = 4; 
-                    World.grid[posy][posx] = 0;
+                    World.grid[posy][posx + 1] = World.PLAYER; 
+                    World.grid[posy][posx] = World.FREE;
                     pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
                     posx = newPosX;
                     posy = newPosY;
@@ -113,8 +114,8 @@ public class playerController : MonoBehaviour
                 //Pushing it down
                 else if (newPosY == posy + 1 && machine.MoveDown() )
                 {
-                    World.grid[posy + 1][posx] = 4;
-                    World.grid[posy][posx] = 0;
+                    World.grid[posy + 1][posx] = World.PLAYER;
+                    World.grid[posy][posx] = World.FREE;
                     pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
                     posx = newPosX;
                     posy = newPosY;
@@ -125,8 +126,8 @@ public class playerController : MonoBehaviour
                 //Pushing it up
                 else if (newPosY == posy - 1 && machine.MoveUp() )
                 {
-                    World.grid[posy - 1][posx] = 4;
-                    World.grid[posy][posx] = 0;
+                    World.grid[posy - 1][posx] = World.PLAYER;
+                    World.grid[posy][posx] = World.FREE;
                     pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
                     posx = newPosX;
                     posy = newPosY;
@@ -139,7 +140,7 @@ public class playerController : MonoBehaviour
         transform.position = Vector2.MoveTowards(transform.position, pos, Time.deltaTime * speed);
     }
 
-    void PrintGrid()
+    public void PrintGrid()
     {
         String line = "";
         for (int y=0; y<World.grid.Length; ++y)
@@ -157,8 +158,8 @@ public class playerController : MonoBehaviour
     {
         if (World.grid[posy][posx - 1] <= 1)
         {
-            World.grid[posy][posx - 1] = 4;
-            World.grid[posy][posx] = 0;
+            World.grid[posy][posx - 1] = World.PLAYER;
+            World.grid[posy][posx] = World.FREE;
             posx = posx - 1;
             pos += new Vector2(-World.blockSize, 0);
             return true;
@@ -170,8 +171,8 @@ public class playerController : MonoBehaviour
     {
         if (World.grid[posy][posx + 1] <= 1)
         {
-            World.grid[posy][posx + 1] = 4;
-            World.grid[posy][posx] = 0;
+            World.grid[posy][posx + 1] = World.PLAYER;
+            World.grid[posy][posx] = World.FREE;
             posx = posx + 1;
             pos += new Vector2(World.blockSize, 0);
             return true;
@@ -183,8 +184,8 @@ public class playerController : MonoBehaviour
     {
         if (World.grid[posy + 1][posx] <= 1)
         {
-            World.grid[posy + 1][posx] = 4;
-            World.grid[posy][posx] = 0;
+            World.grid[posy + 1][posx] = World.PLAYER;
+            World.grid[posy][posx] = World.FREE;
             posy = posy + 1;
             pos += new Vector2(0, -World.blockSize);
             return true;
@@ -196,8 +197,8 @@ public class playerController : MonoBehaviour
     {
         if (World.grid[posy - 1][posx] <= 1)
         {
-            World.grid[posy - 1][posx] = 4;
-            World.grid[posy][posx] = 0;
+            World.grid[posy - 1][posx] = World.PLAYER;
+            World.grid[posy][posx] = World.FREE;
             posy = posy - 1;
             pos += new Vector2(0, World.blockSize);
             return true;

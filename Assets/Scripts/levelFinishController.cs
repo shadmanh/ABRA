@@ -15,6 +15,6 @@ public class levelFinishController : MonoBehaviour
     {
         posx = (int)transform.position.x/World.blockSize;
         posy = -1*(int)transform.position.y/World.blockSize;
-        World.grid[posy][posx] = 1;
+        World.grid[posy][posx] = World.FINISH;
     }
 }

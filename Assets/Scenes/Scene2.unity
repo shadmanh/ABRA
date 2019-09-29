@@ -264,7 +264,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transform: {fileID: 253605627}
   speed: 40
-  nextScene: 0
+  nextScene: 1
 --- !u!1 &290824633
 GameObject:
   m_ObjectHideFlags: 0
@@ -276,6 +276,7 @@ GameObject:
   - component: {fileID: 290824636}
   - component: {fileID: 290824635}
   - component: {fileID: 290824634}
+  - component: {fileID: 290824637}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -348,6 +349,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &290824637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 290824633}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fd4f8476331f97418068a7859d9a409, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1190381450
 GameObject:
   m_ObjectHideFlags: 0
@@ -614,4 +627,4 @@ MonoBehaviour:
   rb: {fileID: 2098779622}
   transform: {fileID: 2098779620}
   speed: 40
-  turnLimit: 0
+  turnLimit: 3

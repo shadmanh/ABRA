@@ -28,11 +28,17 @@ public static class World
             new int[] { 3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3 },
             new int[] { 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3 }
         };
-        //0 is a free space
-        //1 is the finish block
-        //4 is the player
-        //2 is the machine piece
-        //3 is a boundary block
+
+    public static int FREE = 0;
+    public static int FINISH = 1;
+    public static int FREE_OR_FINISH = 1;
+    public static int MACHINE = 2;
+    public static int BOUNDARY = 3;
+    public static int PLAYER = 4;
+    public static int LASER = 5;
+
+    public static List<laserController> lasers = new List<laserController>();
+
     public static void Reset()
     {
         grid = new int[][] { 
@@ -57,5 +63,7 @@ public static class World
             new int[] { 3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3 },
             new int[] { 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3 }
         };
+
+        lasers.Clear();
     }
 }
