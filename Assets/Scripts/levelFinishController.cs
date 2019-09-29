@@ -4,18 +4,17 @@ using UnityEngine;
 
 public class levelFinishController : MonoBehaviour
 {
+    [SerializeField]
+    private Transform transform;
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("mech"))
-        {
-            Debug.Log("Level complete");
-        }
-    }
+    int posx;
+    int posy;
 
     // Update is called once per frame
     void Update()
     {
-        
+        posx = (int)transform.position.x / World.blockSize;
+        posy = -1*(int)transform.position.y/World.blockSize;
+        World.grid[posy][posx] = 1;
     }
 }

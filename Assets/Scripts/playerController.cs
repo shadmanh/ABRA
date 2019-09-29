@@ -11,12 +11,8 @@ public class playerController : MonoBehaviour
     private Transform transform;
     [SerializeField]
     private float speed = 1.0f;
-    [SerializeField]
-    private int[,] world;
-    //0 is a free space
-    //1 is the player
-    //2 is the machine piece
-    //3 is a boundary block
+
+    private machineController machine;
 
     bool moveLeft = false;
     bool moveRight = false;
@@ -27,25 +23,16 @@ public class playerController : MonoBehaviour
     private int posx;
     private int posy;
 
-
     // Start is called before the first frame update
     void Start()
     {
         pos = transform.position;
-        posx = 9;
-        posy = 4;
-        world = new int[,] { 
-            { 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3 },
-            { 3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3 },
-            { 3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3 },
-            { 3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3 },
-            { 3,0,0,0,0,0,2,0,0,1,0,0,0,0,0,0,0,3 },
-            { 3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3 },
-            { 3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3 },
-            { 3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3 },
-            { 3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3 },
-            { 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3 }
-        };
+        posx = (int)transform.position.x/World.blockSize;
+        posy = -1*(int)transform.position.y/World.blockSize;
+        World.grid[posy][posx] = 4;
+
+        GameObject go = GameObject.Find("mech");
+        machine = go.GetComponent<machineController>();
     }
 
     // Update is called once per frame
@@ -57,9 +44,14 @@ public class playerController : MonoBehaviour
         moveDown = Input.GetKey(KeyCode.DownArrow);
     }
 
+    //0 is a free space
+    //1 is the finish block
+    //2 is the machine piece
+    //3 is a boundary block
+    //4 is the player
     private void FixedUpdate()
     {
-        if (transform.position.x == pos.x && transform.position.y == pos.y)
+        if (transform.position.x == posx*World.blockSize && transform.position.y == posy*(-World.blockSize))
         {
             int newPosX = moveLeft ? posx - 1 : posx;
             newPosX = moveRight ? posx + 1 : newPosX;
@@ -69,16 +61,78 @@ public class playerController : MonoBehaviour
             {
                 newPosY = posy;
             }
-            if (world[newPosY, newPosX] == 0)
+            //If the player is trying to move to an open space/finish space
+            if (World.grid[newPosY][newPosX] <= 1)
             {
-                world[newPosY, newPosX] = 1;
-                world[posy, posx] = 0;
-                pos += new Vector2((newPosX-posx)*10, (posy-newPosY)*10);
+                World.grid[newPosY][newPosX] = 1;
+                World.grid[posy][posx] = 0;
+                pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
                 posx = newPosX;
                 posy = newPosY;
+            }
+            //If the player is trying to push the machine
+            else if (World.grid[newPosY][newPosX] == 2)
+            {
+                //Pushing it left
+                if (newPosX == posx - 1 && machine.MoveLeft() )
+                {
+                    World.grid[posy][posx - 1] = 4; 
+                    World.grid[posy][posx] = 0;
+                    pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
+                    posx = newPosX;
+                    posy = newPosY;
+            PrintGrid();
+                }
+                
+                //Pushing it right
+                else if (newPosX == posx + 1 && machine.MoveRight() )
+                {
+                    World.grid[posy][posx + 1] = 4; 
+                    World.grid[posy][posx] = 0;
+                    pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
+                    posx = newPosX;
+                    posy = newPosY;
+            PrintGrid();
+                }
+                
+                //Pushing it down
+                else if (newPosY == posy + 1 && machine.MoveDown() )
+                {
+                    World.grid[posy + 1][posx] = 4;
+                    World.grid[posy][posx] = 0;
+                    pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
+                    posx = newPosX;
+                    posy = newPosY;
+            PrintGrid();
+                }
+                
+                //Pushing it up
+                else if (newPosY == posy - 1 && machine.MoveUp() )
+                {
+                    World.grid[posy - 1][posx] = 4;
+                    World.grid[posy][posx] = 0;
+                    pos += new Vector2((newPosX-posx)*World.blockSize, (posy-newPosY)*World.blockSize);
+                    posx = newPosX;
+                    posy = newPosY;
+                }
+            PrintGrid();
             }
         }
 
         transform.position = Vector2.MoveTowards(transform.position, pos, Time.deltaTime * speed);
+    }
+
+    void PrintGrid()
+    {
+        String line = "";
+        for (int y=0; y<World.grid.Length; ++y)
+        {
+            for (int x=0; x<World.grid[y].Length; ++x)
+            {
+                line += World.grid[y][x] + " ";
+            }
+            line += "\n";
+        }
+        Debug.Log(line);
     }
 }
