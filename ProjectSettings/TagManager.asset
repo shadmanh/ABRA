@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - boundary
+  - mech
   layers:
   - Default
   - TransparentFX
