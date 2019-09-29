@@ -15,9 +15,14 @@ public class machineController : MonoBehaviour
     [SerializeField]
     private int nextScene;
 
+    [SerializeField]
+    private bool toggleUpgrade = false;
+
     private playerController player;
 
     private Vector2 pos;
+
+    private bool movingLeft = true;
 
     // Start is called before the first frame update
     void Start()

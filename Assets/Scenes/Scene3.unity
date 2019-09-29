@@ -265,6 +265,7 @@ MonoBehaviour:
   transform: {fileID: 253605627}
   speed: 40
   nextScene: 2
+  toggleUpgrade: 1
 --- !u!1 &290824633
 GameObject:
   m_ObjectHideFlags: 0
