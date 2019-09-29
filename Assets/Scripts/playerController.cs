@@ -17,8 +17,6 @@ public class playerController : MonoBehaviour
     bool moveUp = false;
     bool moveDown = false;
 
-    private bool snapMovement;
-    public bool isStill = true;
     private Vector2 pos;
     private int velX = 0;
     private int velY = 0;
