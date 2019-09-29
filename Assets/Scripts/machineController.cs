@@ -88,16 +88,35 @@ public class machineController : MonoBehaviour
 
     public bool MoveRight()
     {
-        if (World.grid[posy][posx + 1] <= World.FREE_OR_FINISH)
+        if (World.grid[posy][posx + 1] <= World.FREE_OR_FINISH || World.grid[posy][posx + 1] == World.PLAYER && player.MoveRight()
+            || World.grid[posy][posx + 1] == World.LASER)
         {
             if (World.grid[posy][posx + 1] == World.FINISH)
             {
                 SceneManager.LoadScene(nextScene);
             }
+            else if (World.grid[posy][posx + 1] == World.LASER)
+            {
+                Vector3 position = new Vector3(3, 3, 3);
+                foreach (laserController laser in World.lasers)
+                {
+                    if (laser.getGridX() == posx+1 && laser.getGridY() == posy)
+                    {
+                        Destroy(laser.gameObject);
+                        break;
+                    }
+                }
+            }
             World.grid[posy][posx + 1] = World.MACHINE;
             World.grid[posy][posx] = World.FREE;
             posx = posx + 1;
             pos += new Vector2(World.blockSize, 0);
+            player.PrintGrid();
+            if (World.lasers.Count > 0)
+            {
+                laserController laser2 = World.lasers[World.lasers.Count-1];
+                laser2.UpdateLaser();
+            }
             return true;
         }
         return false;
@@ -139,7 +158,36 @@ public class machineController : MonoBehaviour
 
     public void doAction()
     {
-        MoveLeft();
+        if (toggleUpgrade)
+        {
+            if (movingLeft)
+            {
+                if (World.grid[posy][posx - 1] == World.BOUNDARY)
+                {
+                    movingLeft = false;
+                }
+                else
+                {
+                    MoveLeft();
+                }
+            }
+            else
+            {
+                if (World.grid[posy][posx + 1] == World.BOUNDARY)
+                {
+                    movingLeft = true;
+                }
+                else
+                {
+                    MoveRight();
+                }
+
+            }
+        }
+        else
+        {
+            MoveLeft();
+        }
         player.resetTurnCounter();
     }
 }
