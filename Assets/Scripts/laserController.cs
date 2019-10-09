@@ -34,7 +34,7 @@ public class laserController : MonoBehaviour
             {
                 if (World.grid[curPosY][posx] == World.PLAYER)
                 {
-                    SceneManager.LoadScene(1);
+                    SceneManager.LoadScene(2);
                 }
                 myLaser = Instantiate(laser, new Vector3(pos.x, -1*curPosY*World.blockSize, 0), Quaternion.identity);
                 if (prevLaser != null)
